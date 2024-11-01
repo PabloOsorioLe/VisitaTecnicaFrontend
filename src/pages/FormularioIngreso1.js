@@ -94,7 +94,7 @@ useEffect(() => {
       estadoFiltros,
     };
 
-    fetch('http://localhost:5000/api/send-email', {
+    fetch('https://visitatecnicaclient.onrender.com/api/send-email', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
