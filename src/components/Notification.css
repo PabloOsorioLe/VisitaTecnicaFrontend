@@ -1,0 +1,36 @@
+/* src/components/Notification.css */
+.notification {
+    position: fixed;
+    top: 50%; /* Centrar verticalmente */
+    left: 50%; /* Centrar horizontalmente */
+    transform: translate(-50%, -50%); /* Mover al centro */
+    padding: 5px 15px; /* Ajustar el espaciado interno */
+    border-radius: 5px;
+    color: white;
+    z-index: 1000;
+    display: flex;
+    justify-content: center; /* Centrar contenido horizontalmente */
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: opacity 0.5s ease; /* Transición para la opacidad */
+    font-size: 14px; /* Aumentar el tamaño de la fuente */
+    max-width: 300px; /* Limitar el ancho máximo del fondo */
+    text-align: center; /* Centrar el texto dentro del fondo */
+  }
+  
+  .notification.success {
+    background-color: #4CAF50; /* Verde */
+  }
+  
+  .notification.error {
+    background-color: #f44336; /* Rojo */
+  }
+  
+  .close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px; /* Mantener un tamaño de fuente legible para el botón */
+    cursor: pointer;
+  }
+  
