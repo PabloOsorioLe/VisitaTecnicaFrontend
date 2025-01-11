@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef,useState, useEffect } from 'react';
 import Notification from '../components/Notification';
 import html2pdf from 'html2pdf.js';
+import SignatureCanvas from 'react-signature-canvas';
 
 const FormularioIngreso1 = () => {
   const [cliente, setCliente] = useState('');
@@ -23,9 +24,23 @@ const FormularioIngreso1 = () => {
     caja: '',
     diferencial: '',
     hidraulico: '',
-    grasas: '',
   });
 
+
+  const [firmaGuardada, setFirmaGuardada] = useState(null);
+  const sigCanvas = useRef(null);
+  
+  const clearSignature = () => {
+    sigCanvas.current.clear();
+    setFirmaGuardada(null);
+  };
+
+  const saveSignature = () => {
+    if (!sigCanvas.current.isEmpty()) {
+      const dataUrl = sigCanvas.current.getTrimmedCanvas().toDataURL('image/png');
+      setFirmaGuardada(dataUrl);
+    }
+  };
   
   const [estadoFiltros, setEstadoFiltros] = useState({
     motor: '',
@@ -33,7 +48,6 @@ const FormularioIngreso1 = () => {
     convertidor: '',
     hidraulico: '',
     respiraderos: '',
-    combustible: '',
   });
   const [notification, setNotification] = useState({ message: '', type: '', visible: false });
 
@@ -148,7 +162,6 @@ useEffect(() => {
       caja: '',
       diferencial: '',
       hidraulico: '',
-      grasas: '',
     });
     setEstadoFiltros({
       motor: '',
@@ -156,7 +169,6 @@ useEffect(() => {
       convertidor: '',
       hidraulico: '',
       respiraderos: '',
-      combustible: '',
     });
   };
 
@@ -250,44 +262,7 @@ useEffect(() => {
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
-            <div style={{ flex: 2 }}>
-              <label htmlFor="maquina" style={{ color: '#555', marginBottom: '10px', display: 'block' }}>Máquina:</label>
-              <input
-                type="text"
-                id="maquina"
-                name="maquina"
-                placeholder="Ingrese el nombre de la máquina"
-                value={maquina}
-                onChange={(e) => setMaquina(e.target.value)}
-                style={{ width: '90%', padding: '5px', border: '1px solid #ddd', borderRadius: '5px' }}
-              />
-            </div>
-
-            <div style={{ flex: 1 }}>
-              <label htmlFor="entrada" style={{ color: '#555', marginBottom: '10px', display: 'block' }}>Entrada:</label>
-              <input
-                type="time"
-                id="entrada"
-                name="entrada"
-                value={entrada}
-                onChange={(e) => setEntrada(e.target.value)}
-                style={{ width: '90%', padding: '5px', border: '1px solid #ddd', borderRadius: '5px' }}
-              />
-            </div>
-
-            <div style={{ flex: 1 }}>
-              <label htmlFor="salida" style={{ color: '#555', marginBottom: '10px', display: 'block' }}>Salida:</label>
-              <input
-                type="time"
-                id="salida"
-                name="salida"
-                value={salida}
-                onChange={(e) => setSalida(e.target.value)}
-                style={{ width: '90%', padding: '5px', border: '1px solid #ddd', borderRadius: '5px' }}
-              />
-            </div>
-          </div>
+   
 
           <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
            
@@ -319,19 +294,34 @@ useEffect(() => {
             </div>
           </div>
 
-          <div>
-            <label htmlFor="trabajoRealizado" style={{ color: '#555', marginBottom: '10px', display: 'block' }}>Trabajo que realiza:</label>
-            <textarea
-              id="trabajoRealizado"
-              name="trabajoRealizado"
-              rows="4"
-              value={trabajoRealizado}
-              onChange={(e) => setTrabajoRealizado(e.target.value)}
-              style={{ width: '95%', padding: '5px', border: '1px solid #ddd', borderRadius: '5px', resize: 'none',height:'20px' }}
-            />
-          </div>
+          <label htmlFor="estadoMaquina" style={{ color: '#555', marginBottom: '10px', display: 'block' }}>Estado de la Máquina:</label>
+          <input
+            type="text"
+            id="estadoMaquina"
+            value={estadoMaquina}
+            onChange={(e) => setEstadoMaquina(e.target.value)}
+            style={{ width: '95%', padding: '5px', border: '1px solid #ddd', borderRadius: '5px', marginBottom: '10px' }}
+          />
 
-         
+          <label htmlFor="trabajoEfectuados" style={{ color: '#555', marginBottom: '10px', display: 'block' }}>Trabajo Efectuados:</label>
+            <input
+              type="text"
+              id="trabajoEfectuados"
+              value={trabajoEfectuados}
+              onChange={(e) => setTrabajoEfectuados(e.target.value)}
+              style={{ width: '95%', padding: '5px', border: '1px solid #ddd', borderRadius: '5px', marginBottom: '10px' }}
+            />
+
+            <label htmlFor="observaciones" style={{ color: '#555', marginBottom: '10px', display: 'block' }}>Observaciones:</label>
+            <input
+              type="text"
+              id="observaciones"
+              value={observaciones}
+              onChange={(e) => setObservaciones(e.target.value)}
+              style={{ width: '95%', padding: '5px', border: '1px solid #ddd', borderRadius: '5px' }}
+            />
+
+  
         </div>
 
         <h3 style={{ fontSize: '1.4em', color: '#333', marginBottom: '0px',margin:'0px' }}>Lubricantes empleados</h3>
@@ -386,16 +376,7 @@ useEffect(() => {
               style={{ width: '90%', padding: '5px', border: '1px solid #ddd', borderRadius: '5px' }}
             />
           </div>
-          <div style={{ flex: 1 }}>
-            <label htmlFor="grasas" style={{ color: '#555' }}>Grasas:</label>
-            <input
-              type="text"
-              id="grasas"
-              value={lubricantes.grasas}
-              onChange={(e) => setLubricantes({ ...lubricantes, grasas: e.target.value })}
-              style={{ width: '90%', padding: '5px', border: '1px solid #ddd', borderRadius: '5px' }}
-            />
-          </div>
+
         </div>
 
         <h3 style={{ fontSize: '1.4em', color: '#333', marginBottom: '0px',margin:'0px' }}>Estado Filtros</h3>
@@ -450,64 +431,67 @@ useEffect(() => {
               style={{ width: '90%', padding: '5px', border: '1px solid #ddd', borderRadius: '5px' }}
             />
           </div>
-          <div style={{ flex: 1 }}>
-            <label htmlFor="combustible" style={{ color: '#555' }}>Combustible:</label>
-            <input
-              type="text"
-              id="combustible"
-              value={estadoFiltros.combustible}
-              onChange={(e) => setEstadoFiltros({ ...estadoFiltros, combustible: e.target.value })}
-              style={{ width: '90%', padding: '5px', border: '1px solid #ddd', borderRadius: '5px' }}
-            />
-          </div>
         </div>
 
-        <div style={{ marginTop: '20px', padding: '5px', border: '1px solid #ccc', borderRadius: '10px' }}>
-  <label htmlFor="estadoMaquina" style={{ color: '#555', marginBottom: '10px', display: 'block' }}>Estado de la Máquina:</label>
-  <input
-    type="text"
-    id="estadoMaquina"
-    value={estadoMaquina}
-    onChange={(e) => setEstadoMaquina(e.target.value)}
-    style={{ width: '95%', padding: '5px', border: '1px solid #ddd', borderRadius: '5px', marginBottom: '10px' }}
-  />
 
-  <label htmlFor="trabajoEfectuados" style={{ color: '#555', marginBottom: '10px', display: 'block' }}>Trabajo Efectuados:</label>
-  <input
-    type="text"
-    id="trabajoEfectuados"
-    value={trabajoEfectuados}
-    onChange={(e) => setTrabajoEfectuados(e.target.value)}
-    style={{ width: '95%', padding: '5px', border: '1px solid #ddd', borderRadius: '5px', marginBottom: '10px' }}
-  />
 
-  <label htmlFor="observaciones" style={{ color: '#555', marginBottom: '10px', display: 'block' }}>Observaciones:</label>
-  <input
-    type="text"
-    id="observaciones"
-    value={observaciones}
-    onChange={(e) => setObservaciones(e.target.value)}
-    style={{ width: '95%', padding: '5px', border: '1px solid #ddd', borderRadius: '5px' }}
-  />
-  
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '20px' }}>
+  {/* Sección de Firma */}
+  <div className="grupo" style={{ flex: 1 }}>
+    <h3>Firma Digital</h3>
+    <SignatureCanvas
+      ref={sigCanvas}
+      penColor="black"
+      canvasProps={{
+        width: 100,
+        height: 100,
+        className: 'signature-canvas'
+      }}
+      minWidth={0.5} // Grosor mínimo del lápiz
+      maxWidth={1.5} // Grosor máximo del lápiz
+    />
+    <div className="botones-firma">
+      <button type="button" onClick={clearSignature}>Limpiar</button>
+      <button type="button" onClick={saveSignature}>Guardar Firma</button>
+    </div>
+    {firmaGuardada && (
+      <div className="firma-guardada">
+        <p>Firma guardada:</p>
+        <img src={firmaGuardada} alt="Firma guardada" />
+      </div>
+    )}
+  </div>
+
+  {/* Sección de Correo */}
+  <div style={{ flex: 2 }}>
+    <label 
+      htmlFor="destinatario" 
+      style={{ 
+        color: '#555', 
+        display: 'block', 
+        marginTop: '20px' // Ajusta este valor según necesites
+      }}
+    >
+      Destinatario:
+    </label>
+    <input
+      type="email"
+      id="destinatario"
+      name="destinatario"
+      placeholder="Ingrese el correo del destinatario"
+      value={destinatario}
+      onChange={(e) => setDestinatario(e.target.value)}
+      style={{
+        width: '70%',
+        padding: '10px',
+        border: '1px solid #ddd',
+        borderRadius: '5px',
+      }}
+    />
+  </div>
 </div>
-{/* Espacio adicional antes del siguiente grupo de inputs */}
-<div style={{ marginBottom: '20px' }}></div>
 
-        <div style={{ flex: 2 }}>
-              <label htmlFor="destinatario" style={{ color: '#555', marginBottom: '10px', display: 'block' }}>Destinatario:</label>
-              <input
-                type="email"
-                id="destinatario"
-                name="destinatario"
-                placeholder="Ingrese el correo del destinatario"
-                value={destinatario}
-                onChange={(e) => setDestinatario(e.target.value)}
-                style={{ width: '90%', padding: '10px', border: '1px solid #ddd', borderRadius: '5px' }}
-              />
-            </div>
-            
-             
+  
           {/* Espacio adicional antes del siguiente grupo de inputs */}
           <div style={{ marginBottom: '20px' }}></div>
 
